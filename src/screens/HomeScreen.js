@@ -9,6 +9,7 @@ const HomeScreen = () => {
     const navigator = useNavigation();
     const [messages, setMessages] = useState(dummyMessages);
     const [recording, setRecording] = useState(false);
+    const [speaking, setSpeaking] = useState(false);
     return (
         <View style={styles.outside}>
 
@@ -73,6 +74,19 @@ const HomeScreen = () => {
                                 </TouchableOpacity>
                             )
                         }
+                        {
+                            messages.length > 0 ?
+                                (<TouchableOpacity onPress={() => setMessages([])}>
+                                    <Text style={styles.clearButton}>Clear</Text>
+                                </TouchableOpacity>) : null
+                        }
+                        {
+                            speaking ?
+                                (<TouchableOpacity onPress={() => setSpeaking(false)}>
+                                    <Text style={styles.stopButton}>Stop</Text>
+                                </TouchableOpacity>) : null
+                        }
+
                     </View>
                 </View>
             </View>
@@ -116,6 +130,19 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+    },
+    clearButton: {
+        color: 'blue',
+        fontSize: wp('5%'),
+        fontWeight: 'bold',
+        backgroundColor: "#b8b7ba",
+        position: "absolute",
+        left: 60,
+        textAlign: "center",
+        height: hp('4%'),
+        width: wp('20%'),
+        borderRadius: 10,
+
     },
     container: {
         flex: 1,
@@ -163,6 +190,18 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 10,
         margin: 5,
+    },
+    stopButton: {
+        color: 'black',
+        fontSize: wp('5%'),
+        fontWeight: 'bold',
+        backgroundColor: "#b8b7ba",
+        position: "absolute",
+        right: 60,
+        borderRadius: 10,
+        textAlign: "center",
+        height: hp('4%'),
+        width: wp('20%'),
     },
     text: {
         fontSize: wp('4%'),
