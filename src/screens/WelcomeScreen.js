@@ -1,6 +1,7 @@
 import { Image, StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const WelcomeScreen = () => {
     const navigator = useNavigation();
@@ -11,9 +12,9 @@ const WelcomeScreen = () => {
                 <Text style={styles.headerSubTitle}>Powered by AI</Text>
             </View>
             <View style={styles.body}>
-                <Image source={require("../../assests/Welcome.jpeg")} />
+                <Image source={require("../../assests/bot.jpeg")} style={styles.image} />
             </View>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={() => navigator.navigate("Home")}>
                 <Text style={styles.textButton}>Get Started</Text>
             </TouchableOpacity>
         </View>
@@ -44,18 +45,22 @@ const styles = StyleSheet.create({
 
     headerText: {
         textAlign: 'center',
-        fontSize: 30,
+        fontSize: wp('10%'),
         fontWeight: 'bold',
         color: "green"
     },
     headerSubTitle: {
         textAlign: 'center',
-        fontSize: 20,
+        fontSize: wp('5%'),
         color: "green"
+    },
+    image: {
+        height: wp('75%'),
+        width: wp('75%'),
     },
     textButton: {
         textAlign: 'center',
-        fontSize: 20,
+        fontSize: wp('6%'),
         color: "white",
         fontWeight: 'bold'
     }
