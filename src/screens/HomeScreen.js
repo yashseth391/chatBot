@@ -8,6 +8,7 @@ import { dummyMessages } from '../constant/Messages';
 const HomeScreen = () => {
     const navigator = useNavigation();
     const [messages, setMessages] = useState(dummyMessages);
+    const [recording, setRecording] = useState(false);
     return (
         <View style={styles.outside}>
 
@@ -60,6 +61,19 @@ const HomeScreen = () => {
                         </View>) :
 
                         (<Features />)}
+                    {/* recording,clearing and sending message */}
+                    <View style={styles.bottom}>
+                        {recording ?
+                            (<TouchableOpacity >
+                                <Image source={require("../../assests/Recording.jpg")} style={styles.audioImage} />
+                            </TouchableOpacity>) :
+                            (
+                                <TouchableOpacity >
+                                    <Image source={require("../../assests/audioButton.png")} style={styles.audioImage} />
+                                </TouchableOpacity>
+                            )
+                        }
+                    </View>
                 </View>
             </View>
         </View>
@@ -88,12 +102,21 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderRadius: 20
     },
+    audioImage: {
+        width: wp('21%'),
+        height: hp('10%'),
+
+    },
     body: {
         flexDirection: "row",
         justifyContent: "center"
 
     },
-
+    bottom: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
     container: {
         flex: 1,
         backgroundColor: 'white',
