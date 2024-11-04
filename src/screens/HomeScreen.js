@@ -1,103 +1,145 @@
-import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
-import { useNavigation } from '@react-navigation/native'
+import {
+    FlatList,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from 'react-native';
+import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import Features from '../components/Features';
 import { dummyMessages } from '../constant/Messages';
+import { apiCall } from '../api/Open_AI';
 
 const HomeScreen = () => {
-    const navigator = useNavigation();
+    const navigation = useNavigation();
     const [messages, setMessages] = useState(dummyMessages);
-    const [recording, setRecording] = useState(false);
-    const [speaking, setSpeaking] = useState(false);
+    const [userInput, setUserInput] = useState('');
+
+    const handleSend = async () => {
+        if (userInput.trim()) {
+            setMessages([...messages, {
+                role: 'user',
+                content: userInput.trim()
+            }]);
+            const response = await apiCall(userInput.trim());
+            if (response.success) {
+                setMessages(response.data);
+            }
+            setUserInput('');
+        }
+    };
+
     return (
         <View style={styles.outside}>
-
             <View style={styles.container}>
                 <View style={styles.header}>
-                    {/* bot icon */}
                     <View style={styles.body}>
                         <Image source={require("../../assests/bot.jpeg")} style={styles.image} />
                     </View>
-                    {messages.length > 0 ?
-                        (<View style={styles.header2}>
+                    {messages.length > 0 ? (
+                        <View style={styles.header2}>
                             <Text style={styles.heading}>Assistant</Text>
                             <View style={styles.header3}>
-
                                 <ScrollView
                                     bounces={false}
                                     showsVerticalScrollIndicator={false}
                                 >
                                     {messages.map((message, index) => {
                                         if (message.role === 'assistant') {
-                                            if (message.content.includes('https')) {
-                                                return <View style={styles.assistant} key={index}>
-                                                    <View style={styles.assistantMessageImage}>
 
-                                                        <Image source={{ uri: message.content }} style={styles.messageImage}
-                                                            resizeMode='contain'
-                                                        />
-                                                    </View>
-                                                </View>;
-                                            }
-                                            else {
-                                                return <View style={styles.assistant} key={index}>
+                                            return (
+                                                <View style={styles.assistant} key={index}>
                                                     <View style={styles.assistantMessage}>
                                                         <Text style={styles.text}>{message.content}</Text>
                                                     </View>
-                                                </View>;
-                                            }
-
-                                        }
-                                        else {
-                                            return <View style={styles.user} key={index}>
-                                                <View style={styles.userMessage}>
-                                                    <Text style={styles.text}>{message.content}</Text>
                                                 </View>
-                                            </View>;
+                                            );
+
+                                        } else {
+                                            return (
+                                                <View style={styles.user} key={index}>
+                                                    <View style={styles.userMessage}>
+                                                        <Text style={styles.text}>{message.content}</Text>
+                                                    </View>
+                                                </View>
+                                            );
                                         }
                                     })}
                                 </ScrollView>
                             </View>
-                        </View>) :
+                        </View>
+                    ) : (
+                        <Features />
+                    )}
 
-                        (<Features />)}
-                    {/* recording,clearing and sending message */}
-                    <View style={styles.bottom}>
-                        {recording ?
-                            (<TouchableOpacity >
-                                <Image source={require("../../assests/Recording.jpg")} style={styles.audioImage} />
-                            </TouchableOpacity>) :
-                            (
-                                <TouchableOpacity >
-                                    <Image source={require("../../assests/audioButton.png")} style={styles.audioImage} />
-                                </TouchableOpacity>
-                            )
-                        }
-                        {
-                            messages.length > 0 ?
-                                (<TouchableOpacity onPress={() => setMessages([])}>
-                                    <Text style={styles.clearButton}>Clear</Text>
-                                </TouchableOpacity>) : null
-                        }
-                        {
-                            speaking ?
-                                (<TouchableOpacity onPress={() => setSpeaking(false)}>
-                                    <Text style={styles.stopButton}>Stop</Text>
-                                </TouchableOpacity>) : null
-                        }
-
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            style={styles.input}
+                            value={userInput}
+                            onChangeText={setUserInput}
+                            placeholder="Type your message..."
+                            placeholderTextColor="#666"
+                        />
+                        <TouchableOpacity
+                            style={styles.sendButton}
+                            onPress={handleSend}
+                        >
+                            <Text style={styles.sendButtonText}>Send</Text>
+                        </TouchableOpacity>
+                        {messages.length > 0 && (
+                            <TouchableOpacity onPress={() => setMessages([])}>
+                                <Text>Clear</Text>
+                            </TouchableOpacity>
+                        )}
                     </View>
                 </View>
             </View>
         </View>
+    );
+};
 
-    )
-}
-
-export default HomeScreen
+export default HomeScreen;
 
 const styles = StyleSheet.create({
+    outside: {
+        backgroundColor: 'white',
+        flex: 1,
+    },
+    container: {
+        flex: 1,
+        backgroundColor: 'white',
+        margin: 10
+    },
+    header: {
+        flex: 1,
+        margin: 10,
+    },
+    body: {
+        flexDirection: "row",
+        justifyContent: "center"
+    },
+    image: {
+        height: hp('15%'),
+        width: hp('15%'),
+    },
+    header2: {
+        marginBottom: 10,
+    },
+    header3: {
+        height: hp('58%'),
+        padding: 10,
+        backgroundColor: "#d8d9d2",
+    },
+    heading: {
+        fontSize: wp('5%'),
+        fontWeight: 'bold',
+        color: 'green',
+    },
     assistant: {
         flexDirection: "row",
         justifyContent: "flex-start"
@@ -116,70 +158,10 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderRadius: 20
     },
-    audioImage: {
-        width: wp('21%'),
-        height: hp('10%'),
-
-    },
-    body: {
-        flexDirection: "row",
-        justifyContent: "center"
-
-    },
-    bottom: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    clearButton: {
-        color: 'blue',
-        fontSize: wp('5%'),
-        fontWeight: 'bold',
-        backgroundColor: "#b8b7ba",
-        position: "absolute",
-        left: 60,
-        textAlign: "center",
-        height: hp('4%'),
-        width: wp('20%'),
-        borderRadius: 10,
-
-    },
-    container: {
-        flex: 1,
-        backgroundColor: 'white',
-        margin: 10
-    },
-    header: {
-        flex: 1,
-        margin: 10,
-
-
-    },
-    header2: {
-        marginBottom: 10,
-    },
-    header3: {
-        height: hp('58%'),
-        padding: 10,
-        backgroundColor: "#d8d9d2",
-    },
-    heading: {
-        fontSize: wp('5%'),
-        fontWeight: 'bold',
-        color: 'green',
-    },
-    image: {
-        height: hp('15%'),
-        width: hp('15%'),
-    },
     messageImage: {
         width: wp('60%'),
         height: wp('60%'),
         borderRadius: 10,
-    },
-    outside: {
-        backgroundColor: 'white',
-        flex: 1,
     },
     user: {
         flexDirection: "row",
@@ -191,25 +173,37 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         margin: 5,
     },
-    stopButton: {
-        color: 'black',
-        fontSize: wp('5%'),
-        fontWeight: 'bold',
-        backgroundColor: "#b8b7ba",
-        position: "absolute",
-        right: 60,
-        borderRadius: 10,
-        textAlign: "center",
-        height: hp('4%'),
-        width: wp('20%'),
-    },
     text: {
         fontSize: wp('4%'),
         margin: 5,
     },
-    txt: {
-        fontSize: 30,
-        color: 'red'
+    inputContainer: {
+        flexDirection: 'row',
+        padding: 10,
+        borderTopWidth: 1,
+        borderTopColor: '#ddd',
+        backgroundColor: 'white',
+        alignItems: 'center',
     },
-
-})
+    input: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 20,
+        paddingHorizontal: 15,
+        paddingVertical: 8,
+        marginRight: 10,
+        fontSize: wp('4%'),
+    },
+    sendButton: {
+        backgroundColor: '#007AFF',
+        borderRadius: 20,
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+    },
+    sendButtonText: {
+        color: 'white',
+        fontSize: wp('4%'),
+        fontWeight: '600',
+    }
+});

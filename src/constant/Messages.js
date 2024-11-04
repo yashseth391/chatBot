@@ -1,18 +1,5 @@
+const API_KEYS = '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'
 export const dummyMessages = [
-    {
-        role: 'user',
-        content: 'Hi Jarvis, how are you?'
-    },
-    {
-        role: 'assistant',
-        content: 'I am doing great, how can I help you today?'
-    },
-    {
-        role: 'user',
-        content: 'Create an image of virat kohli playing football'
-    },
-    {
-        role: 'assistant',
-        content: 'https://picsum.photos/seed/picsum/200/300'
-    }
+
+
 ]
